@@ -1,64 +1,268 @@
-/**
-Theme Name: Astra
-Theme URI: https://wpastra.com/
-Author: Brainstorm Force
-Author URI: https://wpastra.com/about/?utm_source=theme_preview&utm_medium=author_link&utm_campaign=astra_theme
-Description: The Astra WordPress theme is lightning-fast and highly customizable. It has over 1 million downloads and the only theme in the world with 5,700+ five-star reviews! It’s ideal for professional web designers, solopreneurs, small businesses, eCommerce, membership sites and any type of website. It offers special features and templates so it works perfectly with all page builders like Spectra, Elementor, Beaver Builder, etc. Fast performance, clean code, mobile-first design and schema markup are all built-in, making the theme exceptionally SEO-friendly. It’s fully compatible with WooCommerce, SureCart and other eCommerce plugins and comes with lots of store-friendly features and templates. Astra also provides expert support for free users. A dedicated team of fully trained WordPress experts are on hand to help with every aspect of the theme. Try the live demo of Astra: https://zipwp.org/themes/astra/
-Version: 4.11.2
-Requires at least: 5.3
-WC requires at least: 3.0
-WC tested up to: 9.6
-Tested up to: 6.8
-Requires PHP: 5.3
-License: GNU General Public License v2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: astra
-Domain Path: /languages
-Tags: custom-menu, custom-logo, entertainment, one-column, two-columns, left-sidebar, e-commerce, right-sidebar, custom-colors, editor-style, featured-images, full-width-template, microformats, post-formats, rtl-language-support, theme-options, threaded-comments, translation-ready, blog
-AMP: true
+/* Desktop Header Layout */
+@media (min-width: 769px) {
+    .ast-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* Distributes space between zones */
+    }
 
-Astra WordPress Theme, Copyright 2020 WPAstra.
-Astra is distributed under the terms of the GNU GPL.
+    /* Left Zone - Logo */
+    .ast-header-row .site-branding {
+        margin-right: auto; /* Pushes logo to the far left */
+    }
 
-Astra is based on Underscores https://underscores.me/, (C) 2012-2020 Automattic, Inc.
-Underscores is distributed under the terms of the GNU GPL v2 or later.
+    /* Center Zone - Menu */
+    .ast-header-row .main-header-menu {
+        text-align: center; /* Centers menu items */
+        flex-grow: 1; /* Allows menu to take available space */
+    }
 
-Normalizing styles have been helped along thanks to the fine work of.
-Nicolas Gallagher and Jonathan Neal https://necolas.github.com/normalize.css/
+    /* Right Zone - Icons */
+    .ast-header-row .ast-header-search,
+    .ast-header-row .ast-header-account-wrap,
+    .ast-header-row .ast-header-woo-cart {
+        margin-left: 15px; /* Adds spacing between icons */
+    }
 
-Astra icon font is based on IcoMoon-Free vector icon by Keyamoon.
-IcoMoon-Free vector icon distributed under terms of CC BY 4.0 or GPL. (https://creativecommons.org/licenses/by/4.0/ or https://www.gnu.org/licenses/gpl.html)
-Source: http://keyamoon.com/
+    .ast-header-row .ast-header-search:first-child,
+    .ast-header-row .ast-header-account-wrap:first-child,
+    .ast-header-row .ast-header-woo-cart:first-child {
+        margin-left: 0; /* Removes margin from the first icon in the group */
+    }
 
-Flexibility is a JavaScript polyfill for Flexbox By Jonathan Neal, 10up. (https://github.com/jonathantneal/flexibility)
-Licensed under MIT ( https://github.com/jonathantneal/flexibility/blob/master/LICENSE.md )
+    /* Ensure all items in the right zone are grouped together */
+    .header-main-layout .ast-flex.ast-justify-content-flex-end {
+        display: flex;
+        align-items: center;
+    }
+}
 
-Screenshot image is a collage of actual sites created using the Astra WordPress Theme.
+/* Tablet and Mobile Header Layout */
+@media (max-width: 921px) {
+    .ast-mobile-header-wrap .ast-mobile-header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
 
-Icons used in the Screenshot image are all licensed under Creative Commons ( CC BY 4.0 ) License ( https://fontawesome.com/license/free )
-https://fontawesome.com/v5.15/icons/store?style=solid
-https://fontawesome.com/v5.15/icons/shopping-cart?style=solid
-https://fontawesome.com/v5.15/icons/pen-square?style=solid
-https://fontawesome.com/v5.15/icons/user-tie?style=solid
-https://fontawesome.com/v5.15/icons/user-tie?style=solid
+    /* Left Zone - Menu Toggle & Search Icon */
+    .ast-mobile-header-wrap .ast-mobile-menu-buttons {
+        display: flex;
+        align-items: center;
+        order: 1; /* Place on the left */
+    }
 
-Illustrations used in the Screenshot images are all licensed under Creative Commons ( CC0 ) License ( https://gumroad.com/l/humaaans )
-https://websitedemos.net/web-design-agency-08/wp-content/uploads/sites/796/2021/05/standing-24.png
-https://websitedemos.net/web-design-agency-08/wp-content/uploads/sites/796/2021/05/sitting-2.png
+    .ast-mobile-header-wrap .ast-header-search {
+        margin-left: 10px; /* Spacing between menu toggle and search */
+    }
 
-Hand-drawn illustrations used are created by Brainstorm Force and released under Creative Commons ( CC0 ) License.
-https://websitedemos.net/web-design-agency-08/wp-content/uploads/sites/796/2021/05/girl-with-image-container.png
-https://websitedemos.net/web-design-agency-08/wp-content/uploads/sites/796/2021/05/boy-with-code-container.png
-https://websitedemos.net/web-design-agency-08/wp-content/uploads/sites/796/2021/05/web-browser.png
+    /* Center Zone - Logo */
+    .ast-mobile-header-wrap .ast-mobile-header-logo-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        order: 2; /* Place in the center */
+        flex-grow: 1; /* Allow logo to take available space and center */
+        /* If the logo is not centering properly with flex-grow,
+           you might need to remove flex-grow and use absolute positioning
+           or transform depending on the exact HTML structure.
+           Example:
+           position: absolute;
+           left: 50%;
+           transform: translateX(-50%);
+        */
+    }
 
-The same site as screenshot can be imported from here https://websitedemos.net/web-design-agency-08/.
+    /* Right Zone - Login & Cart Icons */
+    .ast-mobile-header-wrap .ast-header-extras { /* Assuming a wrapper for right icons */
+        display: flex;
+        align-items: center;
+        order: 3; /* Place on the right */
+    }
 
-For more information, refer to this document on how to create a page like in the screenshot - https://wpastra.com/docs/replicating-the-screenshot/.
+    .ast-mobile-header-wrap .ast-header-account-wrap,
+    .ast-mobile-header-wrap .ast-header-woo-cart {
+        margin-left: 10px; /* Spacing between icons */
+    }
 
-Astra default breadcrumb is based on Breadcrumb Trail by Justin Tadlock. (https://github.com/justintadlock/breadcrumb-trail)
-Breadcrumb Trail is distributed under the terms of the GNU GPL v2 or later.
+    /* Ensure icons themselves have appropriate display if needed */
+    .ast-mobile-header-wrap .ast-header-search .ast-icon,
+    .ast-mobile-header-wrap .ast-header-account-wrap .ast-icon,
+    .ast-mobile-header-wrap .ast-header-woo-cart .ast-icon {
+        display: inline-flex; /* Or block, depending on icon styling */
+        align-items: center;
+    }
+}
 
-Astra local fonts feature is based on Webfonts Loader by WordPress Themes Team (WPTT). (https://github.com/WPTT/webfont-loader)
-Licensed under MIT ( https://github.com/WPTT/webfont-loader/blob/master/LICENSE )
+/* Mobile Specific Overrides (if any needed in future) */
+@media (max-width: 544px) {
+    /* Example: Further reduce spacing if needed on very small screens */
+    /*
+    .ast-mobile-header-wrap .ast-header-search,
+    .ast-mobile-header-wrap .ast-header-account-wrap,
+    .ast-mobile-header-wrap .ast-header-woo-cart {
+        margin-left: 8px;
+    }
+    */
+}
 
-/* Note: The CSS files are loaded from assets/css/ folder. */
+/* Enhanced Shop Page Styling */
+
+/* 1. Product Grid Item Styling */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+    padding: 15px;
+    border: 1px solid #e0e0e0; /* Subtle border */
+    border-radius: 5px; /* Slightly rounded corners */
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+    background-color: #ffffff; /* Ensure background is white */
+    margin-bottom: 30px; /* Ensure consistent bottom margin */
+}
+
+/* Hover effect for product items */
+.woocommerce ul.products li.product:hover,
+.woocommerce-page ul.products li.product:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Softer shadow on hover */
+    transform: translateY(-5px); /* Slight lift effect */
+}
+
+/* Ensure product link covers the image and title for clickability */
+.woocommerce ul.products li.product .woocommerce-loop-product__link {
+    display: block;
+    text-decoration: none;
+}
+
+/* Product Image Styling */
+.woocommerce ul.products li.product .woocommerce-loop-product__link img {
+    border-radius: 4px; /* Rounded corners for image if desired */
+    margin-bottom: 15px; /* Space between image and title */
+}
+
+/* 2. Typography */
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+    font-size: 1.1em; /* Slightly larger title */
+    font-weight: 600; /* Bolder title */
+    color: #333333;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+}
+
+.woocommerce ul.products li.product .price {
+    font-size: 1.2em; /* Larger price */
+    font-weight: 700; /* Bold price */
+    color: #27ae60; /* Greenish color for price, adjust as needed */
+    display: block; /* Ensure it takes its own line if not already */
+    margin-bottom: 0.75em;
+}
+
+.woocommerce ul.products li.product .price ins {
+    color: #27ae60; /* Sale price color */
+    text-decoration: none;
+}
+
+.woocommerce ul.products li.product .price del {
+    color: #999999; /* Original price color when on sale */
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+/* Category Styling (if displayed on shop loop) */
+.woocommerce ul.products li.product .ast-woo-product-category {
+    font-size: 0.85em;
+    color: #777777;
+    margin-bottom: 0.5em;
+    display: block;
+}
+.woocommerce ul.products li.product .ast-woo-product-category a {
+    color: #777777;
+    text-decoration: none;
+}
+.woocommerce ul.products li.product .ast-woo-product-category a:hover {
+    color: #333333;
+}
+
+
+/* 3. Button Styling */
+/* General button consistency (using Astra's button class as a base where possible) */
+.woocommerce .button,
+.woocommerce button.button,
+.woocommerce input.button {
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom 'Request Total with Shipping Cost' Button */
+.request-total-button {
+    background-color: #0073aa; /* Example: WordPress blue */
+    color: #ffffff !important; /* Ensure text is white, !important if overridden by theme */
+    border: none;
+    text-align: center;
+    display: block; /* Make it full width within its container */
+    width: 100%;
+    margin-top: 10px; /* Space above the button */
+    box-sizing: border-box; /* Ensure padding doesn't increase width */
+}
+
+.request-total-button:hover,
+.request-total-button:focus {
+    background-color: #005a87; /* Darker shade on hover */
+    color: #ffffff !important;
+}
+
+/* WooCommerce Pagination */
+.woocommerce nav.woocommerce-pagination ul {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span {
+    padding: 10px 15px;
+    font-weight: 500;
+}
+.woocommerce nav.woocommerce-pagination ul li a:hover,
+.woocommerce nav.woocommerce-pagination ul li span.current {
+    background-color: #0073aa;
+    color: #ffffff;
+}
+
+/* WooCommerce Sorting Dropdown */
+.woocommerce .woocommerce-ordering select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+}
+
+/* 4. Sale Badges & Other Notices */
+.woocommerce span.onsale {
+    background-color: #e74c3c; /* Red color for sale badge */
+    color: #ffffff;
+    border-radius: 20px; /* Pill shape */
+    padding: 5px 12px;
+    font-size: 0.9em;
+    font-weight: 600;
+    min-height: auto;
+    min-width: auto;
+    line-height: 1.5;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 9;
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .woocommerce ul.products li.product .woocommerce-loop-product__title {
+        font-size: 1em;
+    }
+    .woocommerce ul.products li.product .price {
+        font-size: 1.1em;
+    }
+    .request-total-button {
+        padding: 12px 15px; /* Adjust padding for smaller screens */
+        font-size: 0.95em;
+    }
+}
