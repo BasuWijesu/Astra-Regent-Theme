@@ -204,3 +204,152 @@ require_once ASTRA_THEME_DIR . 'inc/core/markup/class-astra-markup.php';
 require_once ASTRA_THEME_DIR . 'inc/core/deprecated/deprecated-filters.php';
 require_once ASTRA_THEME_DIR . 'inc/core/deprecated/deprecated-hooks.php';
 require_once ASTRA_THEME_DIR . 'inc/core/deprecated/deprecated-functions.php';
+
+// Child Theme Specific Functions to Remove Add to Cart
+if ( ! function_exists( 'my_astra_remove_shop_add_to_cart' ) ) {
+    function my_astra_remove_shop_add_to_cart( $structure ) {
+        if ( is_array( $structure ) ) {
+            $structure = array_diff( $structure, array( 'add_cart' ) );
+        }
+        return $structure;
+    }
+}
+add_filter( 'astra_woo_shop_product_structure', 'my_astra_remove_shop_add_to_cart', 20 );
+
+if ( ! function_exists( 'my_astra_remove_single_product_add_to_cart' ) ) {
+    function my_astra_remove_single_product_add_to_cart( $structure ) {
+        if ( is_array( $structure ) ) {
+            $structure = array_diff( $structure, array( 'add_cart' ) );
+        }
+        return $structure;
+    }
+}
+add_filter( 'astra_woo_single_product_structure', 'my_astra_remove_single_product_add_to_cart', 20 );
+
+// Add 'Request Total with Shipping Cost' button
+if ( ! function_exists( 'display_request_total_button' ) ) {
+    function display_request_total_button() {
+        global $product;
+
+        if ( $product && is_a( $product, 'WC_Product' ) ) { // Ensure $product is a valid WC_Product object
+            $product_id = $product->get_id();
+            $request_url = home_url('/request-a-quote/?product_id=' . $product_id);
+
+            echo '<a href="' . esc_url( $request_url ) . '" class="button request-total-button">' . esc_html__( 'Request Total with Shipping Cost', 'astra' ) . '</a>';
+        }
+    }
+}
+
+// Add button to Shop/Archive pages
+add_action( 'woocommerce_after_shop_loop_item', 'display_request_total_button', 10 );
+
+// Add button to Single Product pages
+add_action( 'woocommerce_single_product_summary', 'display_request_total_button', 30 );
+
+// Handle Quote Request Submission
+if ( ! function_exists( 'handle_quote_request_submission' ) ) {
+    function handle_quote_request_submission() {
+        if ( isset( $_POST['submit_quote_request'] ) && isset( $_POST['request_quote_nonce'] ) ) {
+            if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['request_quote_nonce'] ) ), 'request_quote_action' ) ) {
+                // Nonce verification failed
+                $redirect_url = add_query_arg( array(
+                    'quote_status' => 'error',
+                    'message' => urlencode( __( 'Security check failed. Please try again.', 'astra' ) ),
+                    'product_id' => isset( $_POST['product_id'] ) ? intval( $_POST['product_id'] ) : ''
+                ), home_url( '/request-a-quote/' ) );
+                wp_safe_redirect( $redirect_url );
+                exit;
+            }
+
+            // Sanitize and retrieve form data
+            $product_id = isset( $_POST['product_id'] ) ? intval( $_POST['product_id'] ) : 0;
+            $name = isset( $_POST['quote_name'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_name'] ) ) : '';
+            $email = isset( $_POST['quote_email'] ) ? sanitize_email( wp_unslash( $_POST['quote_email'] ) ) : '';
+            $address_1 = isset( $_POST['quote_shipping_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_shipping_address_1'] ) ) : '';
+            $address_2 = isset( $_POST['quote_shipping_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_shipping_address_2'] ) ) : '';
+            $city = isset( $_POST['quote_shipping_city'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_shipping_city'] ) ) : '';
+            $state = isset( $_POST['quote_shipping_state'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_shipping_state'] ) ) : '';
+            $postcode = isset( $_POST['quote_shipping_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_shipping_postcode'] ) ) : '';
+            $country = isset( $_POST['quote_shipping_country'] ) ? sanitize_text_field( wp_unslash( $_POST['quote_shipping_country'] ) ) : '';
+            $notes = isset( $_POST['quote_notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['quote_notes'] ) ) : '';
+
+            // Basic Validation
+            $errors = array();
+            if ( empty( $name ) ) { $errors[] = __( 'Name is required.', 'astra' ); }
+            if ( empty( $email ) || ! is_email( $email ) ) { $errors[] = __( 'A valid email is required.', 'astra' ); }
+            if ( empty( $address_1 ) ) { $errors[] = __( 'Shipping Address Line 1 is required.', 'astra' ); }
+            if ( empty( $city ) ) { $errors[] = __( 'Shipping City is required.', 'astra' ); }
+            if ( empty( $postcode ) ) { $errors[] = __( 'Shipping Postcode/Zip is required.', 'astra' ); }
+            if ( empty( $country ) ) { $errors[] = __( 'Shipping Country is required.', 'astra' ); }
+            if ( ! $product_id ) { $errors[] = __( 'Product ID is missing.', 'astra' ); }
+
+
+            if ( ! empty( $errors ) ) {
+                // Redirect back with error messages
+                $redirect_url = add_query_arg( array(
+                    'quote_status' => 'error',
+                    'message' => urlencode( implode( '<br>', $errors ) ),
+                    'product_id' => $product_id
+                ), home_url( '/request-a-quote/' ) );
+                wp_safe_redirect( $redirect_url );
+                exit;
+            }
+
+            // Validation passed, proceed with email
+            $product = wc_get_product( $product_id );
+            if ( ! $product ) {
+                $redirect_url = add_query_arg( array(
+                    'quote_status' => 'error',
+                    'message' => urlencode( __( 'Invalid Product ID.', 'astra' ) ),
+                     'product_id' => $product_id
+                ), home_url( '/request-a-quote/' ) );
+                wp_safe_redirect( $redirect_url );
+                exit;
+            }
+
+            $admin_email = get_option( 'admin_email' ); // Using WordPress admin email
+            $subject = sprintf( __( 'New Quote Request for %s', 'astra' ), $product->get_name() );
+
+            $email_body = "A new quote request has been submitted.\n\n";
+            $email_body .= "Product: " . $product->get_name() . " (ID: " . $product_id . ")\n";
+            $email_body .= "Product Price (excluding shipping): " . $product->get_price_html() . "\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            $email_body .= "Customer Details:\n";
+            $email_body .= "Name: " . $name . "\n";
+            $email_body .= "Email: " . $email . "\n\n";
+            $email_body .= "Shipping Address:\n";
+            $email_body .= $address_1 . "\n";
+            if ( ! empty( $address_2 ) ) { $email_body .= $address_2 . "\n"; }
+            $email_body .= $city . ", " . $state . " " . $postcode . "\n";
+            $email_body .= $country . "\n\n";
+            if ( ! empty( $notes ) ) {
+                $email_body .= "Optional Notes:\n" . $notes . "\n";
+            }
+
+            $headers = array( 'Content-Type: text/plain; charset=UTF-8' );
+            $headers[] = 'From: ' . $name . ' <' . $email . '>';
+            $headers[] = 'Reply-To: ' . $email;
+
+
+            if ( wp_mail( $admin_email, $subject, $email_body, $headers ) ) {
+                // Email sent successfully
+                $redirect_url = add_query_arg( array(
+                    'quote_status' => 'success',
+                    'message' => urlencode( __( 'Your quote request has been submitted successfully! We will get back to you soon.', 'astra' ) ),
+                    'product_id' => $product_id
+                ), home_url( '/request-a-quote/' ) );
+            } else {
+                // Email sending failed
+                $redirect_url = add_query_arg( array(
+                    'quote_status' => 'error',
+                    'message' => urlencode( __( 'There was a problem sending your quote request. Please try again later.', 'astra' ) ),
+                    'product_id' => $product_id
+                ), home_url( '/request-a-quote/' ) );
+            }
+            wp_safe_redirect( $redirect_url );
+            exit;
+        }
+    }
+}
+add_action( 'init', 'handle_quote_request_submission' );
+
+?>
